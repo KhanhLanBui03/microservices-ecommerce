@@ -14,6 +14,19 @@ services:
     volumes:
       - product_data:/var/lib/mysql
     restart: always
+  mysql-order:
+    image: mysql:8.3.0
+    container_name: mysql-order
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: order_service
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - order_data:/var/lib/mysql
+    restart: always
 
   postgres-user:
     image: postgres:15
@@ -30,6 +43,7 @@ services:
 volumes:
   product_data:
   user_data:
+  order_data:
 
 networks:
   default:
