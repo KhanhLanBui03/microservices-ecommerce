@@ -1,0 +1,40 @@
+package com.fit.microservices.produc.controller;
+
+import com.fit.microservices.produc.dto.CategoryRequest;
+import com.fit.microservices.produc.dto.CategoryResponse;
+import com.fit.microservices.produc.model.Category;
+import com.fit.microservices.produc.repository.CategoryRepository;
+import com.fit.microservices.produc.service.CategoryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/category")
+@RequiredArgsConstructor
+public class CategoryController {
+    private final CategoryService categoryService;
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryResponse> findAll() {
+        return  categoryService.findAll();
+    }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryResponse createCategory(@RequestBody CategoryRequest categoryRequest) {
+        return categoryService.save(categoryRequest);
+    }
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryResponse updateCategory(@PathVariable Long id, CategoryRequest categoryRequest) {
+        return categoryService.update(id, categoryRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteCategory(@PathVariable Long id) {
+        categoryService.deleteById(id);
+    }
+}

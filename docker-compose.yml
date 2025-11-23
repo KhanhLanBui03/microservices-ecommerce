@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  mysql-product:
+    image: mysql:8.3.0
+    container_name: mysql-product
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: product_service
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - product_data:/var/lib/mysql
+    restart: always
+
+  postgres-user:
+    image: postgres:15
+    container_name: postgres-user
+    environment:
+      POSTGRES_DB: user_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    restart: always
+volumes:
+  product_data:
+  user_data:
+
+networks:
+  default:
+    name: microservices-network
