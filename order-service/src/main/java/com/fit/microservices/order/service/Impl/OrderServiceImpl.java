@@ -9,6 +9,7 @@ import com.fit.microservices.order.repository.OrderRepository;
 import com.fit.microservices.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
@@ -17,9 +18,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
     @Override
     public void placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -31,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderLineItemsList(orderLineItems);
         List<String> skuCodes =order.getOrderLineItemsList().stream().map(OrderLineItem::getSkuCode).toList();
         // call inventory service and place order if product is in stock
-        InventoryResponse[] inventoryResponseArray =webClient.get()
+        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
                 .uri("http://localhost:8083/api/inventory",uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
