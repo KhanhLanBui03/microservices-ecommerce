@@ -27,6 +27,19 @@ services:
     volumes:
       - order_data:/var/lib/mysql
     restart: always
+  mysql-inventory:
+    image: mysql:8.3.0
+    container_name: mysql-inventory
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inventory_service
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3308:3306"
+    volumes:
+      - inventory_data:/var/lib/mysql
+    restart: always
 
   postgres-user:
     image: postgres:15
@@ -44,6 +57,7 @@ volumes:
   product_data:
   user_data:
   order_data:
+  inventory_data:
 
 networks:
   default:
