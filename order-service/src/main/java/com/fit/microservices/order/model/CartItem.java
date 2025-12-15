@@ -6,20 +6,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
 @Entity
-@Table(name="orders")
-public class Order {
+@Table(name = "cart_item")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
-    private String orderNumber;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<OrderLineItem> orderLineItemsList;
+    @Column(nullable = false)
+    private String skuCode;
+    private Integer quantity;
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 }

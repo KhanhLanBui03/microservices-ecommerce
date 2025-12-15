@@ -1,14 +1,13 @@
 package com.fit.microservices.user.controller;
 
+import com.fit.microservices.user.dto.UserRequest;
 import com.fit.microservices.user.dto.UserResponse;
+import com.fit.microservices.user.model.User;
 import com.fit.microservices.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,9 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserResponse> getUsers() {
-        return userService.findAll();
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id){
+        return new ResponseEntity<>(userService.getUserById(id),HttpStatus.OK);
     }
 }
