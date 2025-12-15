@@ -1,18 +1,16 @@
 package com.fit.microservices.order.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class OrderRequest {
+@NoArgsConstructor
+public class AddCartItemRequest {
     private Long userId;
-    private List<OrderLineItemsDto> orderLineItemsDtoList;
+    private String skuCode;
+    private Integer quantity;
 }

@@ -1,9 +1,8 @@
 package com.fit.microservices.order.service.Impl;
 
 import com.fit.microservices.order.client.InventoryClient;
-import com.fit.microservices.order.dto.InventoryResponse;
-import com.fit.microservices.order.dto.OrderLineItemsDto;
-import com.fit.microservices.order.dto.OrderRequest;
+import com.fit.microservices.order.client.UserClient;
+import com.fit.microservices.order.dto.*;
 import com.fit.microservices.order.exception.ProductOutOfStockException;
 import com.fit.microservices.order.model.Order;
 import com.fit.microservices.order.model.OrderLineItem;
@@ -25,21 +24,17 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 //    private final WebClient.Builder webClientBuilder;
     private final InventoryClient  inventoryClient;
+    private final UserClient  userClient;
     public void placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
+        order.setUserId(orderRequest.getUserId());
         List<OrderLineItem>  orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
                 .map(this::mapToDto)
                 .toList();
         order.setOrderLineItemsList(orderLineItems);
         List<String> skuCodes =order.getOrderLineItemsList().stream().map(OrderLineItem::getSkuCode).toList();
-        // call inventory service and place order if product is in stock
-//        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
-//                .uri("http://inventory-service/api/inventory",uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
-//                .retrieve()
-//                .bodyToMono(InventoryResponse[].class)
-//                .block();
         InventoryResponse[] inventoryResponseArray = inventoryClient.checkStock(skuCodes);
         boolean allProductsInStock =  Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::isInStock);
         if(allProductsInStock){
@@ -54,5 +49,21 @@ public class OrderServiceImpl implements OrderService {
         orderLineItem.setQuantity(orderLineItemDto.getQuantity());
         orderLineItem.setPrice(orderLineItemDto.getPrice());
         return orderLineItem;
+    }
+
+    @Override
+    public OrderResponse getOrderById(Long id) {
+        Order order = orderRepository.findById(id).orElse(null);
+        List<OrderLineItemsDto> items = order.getOrderLineItemsList()
+                .stream()
+                .map(item->{
+                    OrderLineItemsDto itemDto = new OrderLineItemsDto();
+                    itemDto.setSkuCode(item.getSkuCode());
+                    itemDto.setQuantity(item.getQuantity());
+                    itemDto.setPrice(item.getPrice());
+                    return itemDto;
+                }).toList();
+        UserResponse userResponse = userClient.getUserById(order.getUserId());
+        return new OrderResponse(order.getId(),order.getOrderNumber(),items,userResponse);
     }
 }

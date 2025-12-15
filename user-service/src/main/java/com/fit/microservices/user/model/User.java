@@ -1,24 +1,31 @@
 package com.fit.microservices.user.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
 @Entity
 @Table(name = "users")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String fullName;
+    @Column(unique = true)
     private String email;
-    private String username;
-    private String password;
-    private String role = "USER";
+    private String phone;
+    private String address;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
