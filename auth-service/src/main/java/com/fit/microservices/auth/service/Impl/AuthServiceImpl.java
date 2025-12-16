@@ -1,12 +1,17 @@
 package com.fit.microservices.auth.service.Impl;
 
+import com.fit.microservices.auth.client.UserClient;
+import com.fit.microservices.auth.dto.*;
 import com.fit.microservices.auth.model.Credential;
 import com.fit.microservices.auth.repository.CredentialRepository;
 import com.fit.microservices.auth.service.AuthService;
 import com.fit.microservices.auth.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -14,24 +19,37 @@ public class AuthServiceImpl implements AuthService {
     private final CredentialRepository credentialRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserClient userClient;
     @Override
-    public String login(String email, String password) {
-        Credential credential = credentialRepository.findByEmail(email)
+    public ResponseEntity<?> login(LoginRequest loginRequest) {
+        Credential credential = credentialRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-        if (!passwordEncoder.matches(password, credential.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), credential.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
+        String token = jwtUtil.generateToken(loginRequest.getEmail(), credential.getRole());
+        return ResponseEntity.ok(
+                new LoginResponse(
+                        token,
+                        credential.getRole()
+                )
+        );
 
-        return jwtUtil.generateToken(email, credential.getRole());
     }
     @Override
-    public void register(String email, String password) {
-        Credential credential = new Credential();
-        credential.setEmail(email);
-        credential.setPassword(passwordEncoder.encode(password));
+    public void register(RegisterRequest registerRequest) {
+        UserRequest  userRequest = new UserRequest();
+        userRequest.setFullName(registerRequest.getFullName());
+        userRequest.setEmail(registerRequest.getEmail());
+        userRequest.setPhone(registerRequest.getPhone());
+        userRequest.setAddress(registerRequest.getAddress());
+        UserResponse userResponse = userClient.createUser(userRequest);
+        Credential  credential = new Credential();
+        credential.setEmail(registerRequest.getEmail());
+        credential.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        credential.setUserId(userResponse.getId());
         credential.setRole("USER");
-
         credentialRepository.save(credential);
     }
 }

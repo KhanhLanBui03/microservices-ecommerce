@@ -1,4 +1,4 @@
-package com.fit.microservices.user.dto;
+package com.fit.microservices.auth.dto;
 
 import lombok.*;
 

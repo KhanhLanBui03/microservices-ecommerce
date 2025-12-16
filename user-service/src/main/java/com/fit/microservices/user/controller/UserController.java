@@ -27,4 +27,15 @@ public class UserController {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+    @PostMapping
+    public UserResponse createUser(@RequestBody UserRequest request) {
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .address(request.getAddress())
+                .build();
+        userRepository.save(user);
+        return new UserResponse(user.getId());
+    }
 }
