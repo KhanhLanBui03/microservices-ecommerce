@@ -1,12 +1,14 @@
 package com.fit.microservices.order.service.Impl;
 
 import com.fit.microservices.order.dto.AddCartItemRequest;
+import com.fit.microservices.order.event.OrderPlacedEvent;
 import com.fit.microservices.order.model.Cart;
 import com.fit.microservices.order.model.CartItem;
 import com.fit.microservices.order.repository.CartItemRepository;
 import com.fit.microservices.order.repository.CartRepository;
 import com.fit.microservices.order.service.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+
     @Override
     public void addCart(AddCartItemRequest request) {
         Cart cart = cartRepository.findByUserId(request.getUserId())
