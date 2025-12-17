@@ -1,9 +1,10 @@
-package com.fit.microservices.order.event;
+package com.fit.microservices.inventory.event;
 
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor

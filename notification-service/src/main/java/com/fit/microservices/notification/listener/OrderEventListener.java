@@ -20,8 +20,9 @@ public class OrderEventListener {
         try {
             emailService.sendOrderEmail(event);
         } catch (Exception e) {
-            System.err.println("❌ Handle order event failed: " + e.getMessage());
+            System.err.println("Handle order event failed: " + e.getMessage());
         }
     }
+
 
 }
