@@ -3,12 +3,14 @@ package com.fit.microservices.order.service.Impl;
 import com.fit.microservices.order.client.InventoryClient;
 import com.fit.microservices.order.client.UserClient;
 import com.fit.microservices.order.dto.*;
+import com.fit.microservices.order.event.OrderPlacedEvent;
 import com.fit.microservices.order.exception.ProductOutOfStockException;
 import com.fit.microservices.order.model.Order;
 import com.fit.microservices.order.model.OrderLineItem;
 import com.fit.microservices.order.repository.OrderRepository;
 import com.fit.microservices.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 //import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
 //    private final WebClient.Builder webClientBuilder;
     private final InventoryClient  inventoryClient;
     private final UserClient  userClient;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
     public void placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -42,6 +45,19 @@ public class OrderServiceImpl implements OrderService {
         }else {
             throw new ProductOutOfStockException("Product is not in stock");
         }
+        OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent(
+                order.getId(),
+                order.getOrderNumber(),
+                order.getUserId(),
+                order.getOrderLineItemsList().stream()
+                        .map(item -> new OrderPlacedEvent.OrderItem(
+                                item.getSkuCode(),
+                                item.getQuantity(),
+                                item.getPrice()
+                        )).toList()
+        );
+        kafkaTemplate.send("order-topic", orderPlacedEvent);
+        System.out.println("Đã gửi Kafka event: "+orderPlacedEvent);
     }
     private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemDto) {
         OrderLineItem orderLineItem = new OrderLineItem();
