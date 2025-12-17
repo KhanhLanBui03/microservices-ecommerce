@@ -1,9 +1,6 @@
 package com.fit.microservices.notification.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,6 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class OrderPlacedEvent {
     private Long orderId;
     private String orderNumber;
@@ -21,6 +19,7 @@ public class OrderPlacedEvent {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @ToString
     public static class OrderItem {
         private String skuCode;
         private Integer quantity;

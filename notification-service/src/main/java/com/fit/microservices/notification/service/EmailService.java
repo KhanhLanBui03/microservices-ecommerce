@@ -91,7 +91,7 @@ public class EmailService {
             System.out.println("📧 Email sent for order " + event.getOrderId());
 
         } catch (MessagingException e) {
-            System.err.println("❌ Send email failed: " + e.getMessage());
+            System.err.println("Send email failed: " + e.getMessage());
         }
     }
 
