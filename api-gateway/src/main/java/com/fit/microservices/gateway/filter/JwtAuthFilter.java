@@ -32,6 +32,12 @@ public class JwtAuthFilter implements GlobalFilter {
         if (path.startsWith("/api/auth")) {
             return chain.filter(exchange);
         }
+        if (path.startsWith("/actuator/prometheus")) {
+            return chain.filter(exchange);
+        }
+        if (path.startsWith("/actuator/**")) {
+            return chain.filter(exchange);
+        }
 
         String authHeader = exchange.getRequest()
                 .getHeaders()

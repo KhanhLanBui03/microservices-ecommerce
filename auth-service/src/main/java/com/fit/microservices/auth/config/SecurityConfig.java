@@ -15,6 +15,10 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        // 👉 CHO PHÉP TRUY CẬP /actuator/prometheus mà không cần token
+                        .requestMatchers("/actuator/prometheus").permitAll()
+                        // 👉 Tùy theo bạn có expose thêm gì nữa
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
