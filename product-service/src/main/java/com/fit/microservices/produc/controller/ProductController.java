@@ -3,6 +3,7 @@ package com.fit.microservices.produc.controller;
 import com.fit.microservices.produc.dto.ProductRequest;
 import com.fit.microservices.produc.dto.ProductResponse;
 import com.fit.microservices.produc.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse createProduct(@RequestBody ProductRequest productRequest) {
+    public ProductResponse createProduct(@Valid  @RequestBody ProductRequest productRequest) {
         return productService.save(productRequest);
     }
 
@@ -29,7 +30,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse updateProduct(@PathVariable Long id,@RequestBody ProductRequest productRequest) {
+    public ProductResponse updateProduct(@PathVariable Long id,@Valid @RequestBody ProductRequest productRequest) {
         return productService.update(id, productRequest);
     }
     @DeleteMapping("/{id}")

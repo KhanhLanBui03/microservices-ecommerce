@@ -5,6 +5,7 @@ import com.fit.microservices.user.dto.UserResponse;
 import com.fit.microservices.user.model.User;
 import com.fit.microservices.user.repository.UserRepository;
 import com.fit.microservices.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
     @PostMapping
-    public UserResponse createUser(@RequestBody UserRequest request) {
+    public UserResponse createUser(@Valid  @RequestBody UserRequest request) {
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())

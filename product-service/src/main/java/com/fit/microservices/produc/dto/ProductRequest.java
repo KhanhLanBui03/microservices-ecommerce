@@ -1,6 +1,10 @@
 package com.fit.microservices.produc.dto;
 
 import com.fit.microservices.produc.model.Category;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +17,17 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 public class ProductRequest {
+    @NotBlank(message = "Tên sản phẩm không được để trống")
+    @Size(min=3,max = 150, message = "Tên sản phẩm từ 3 đến 150 ký tự")
     private String name;
+    @Size(max = 1000, message = "Mô tả không quá 1000 ký tự")
     private String description;
+    @NotBlank(message = "SKU không được để trống")
+    @Size(max = 50, message = "SKU tối đa 50 ký tự")
     private String skuCode;
+    @NotNull(message = "Giá sản phẩm không được để trống")
+    @Positive(message = "Giá sản phẩm phải lớn hơn 0")
     private BigDecimal price;
+    @NotNull(message = "Category không được để trống")
     private Long categoryId;
 }

@@ -5,6 +5,7 @@ import com.fit.microservices.produc.dto.CategoryResponse;
 import com.fit.microservices.produc.model.Category;
 import com.fit.microservices.produc.repository.CategoryRepository;
 import com.fit.microservices.produc.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +24,12 @@ public class CategoryController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse createCategory(@RequestBody CategoryRequest categoryRequest) {
+    public CategoryResponse createCategory(@Valid  @RequestBody CategoryRequest categoryRequest) {
         return categoryService.save(categoryRequest);
     }
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CategoryResponse updateCategory(@PathVariable Long id, CategoryRequest categoryRequest) {
+    public CategoryResponse updateCategory(@PathVariable Long id,@Valid  @RequestBody CategoryRequest categoryRequest) {
         return categoryService.update(id, categoryRequest);
     }
 
