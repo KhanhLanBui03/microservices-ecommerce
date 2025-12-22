@@ -1,5 +1,7 @@
 version: '3.9'
+
 services:
+  # ===================== MYSQL PRODUCT =====================
   mysql-product:
     image: mysql:8.3.0
     container_name: mysql-product
@@ -12,7 +14,26 @@ services:
       - "3306:3306"
     volumes:
       - product_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: always
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql-product:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+
+  # ===================== MYSQL ORDER =====================
   mysql-order:
     image: mysql:8.3.0
     container_name: mysql-order
@@ -25,7 +46,26 @@ services:
       - "3307:3306"
     volumes:
       - order_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: always
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql-order:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+
+  # ===================== MYSQL AUTH =====================
   mysql-auth:
     image: mysql:8.3.0
     container_name: mysql-auth
@@ -38,7 +78,26 @@ services:
       - "3309:3306"
     volumes:
       - auth_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: always
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql-auth:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+
+  # ===================== MYSQL INVENTORY =====================
   mysql-inventory:
     image: mysql:8.3.0
     container_name: mysql-inventory
@@ -51,8 +110,26 @@ services:
       - "3308:3306"
     volumes:
       - inventory_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: always
 
+  inventory-service:
+    build: ./inventory-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql-inventory:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+
+  # ===================== POSTGRES USER =====================
   postgres-user:
     image: postgres:15
     container_name: postgres-user
@@ -64,8 +141,43 @@ services:
       - "5432:5432"
     volumes:
       - user_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: always
 
+  user-service:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+
+  # ===================== EUREKA =====================
+  discovery-server:
+    build: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+
+  # ===================== API GATEWAY =====================
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    depends_on:
+      discovery-server:
+        condition: service_started
+
+  # ===================== KAFKA =====================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper-ecommerce
@@ -74,6 +186,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+
   kafka:
     image: confluentinc/cp-kafka:7.4.4
     container_name: kafka
@@ -85,21 +198,24 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  #Monitoring with prometheus and grafana
+
+  # ===================== MONITORING =====================
   prometheus:
-      image: prom/prometheus
-      ports:
-        - "9090:9090"
-      volumes:
-        - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      restart: unless-stopped
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
   grafana:
-      image: grafana/grafana
-      ports:
-        - "3000:3000"
-      restart: unless-stopped
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
 volumes:
   product_data:
   user_data:
