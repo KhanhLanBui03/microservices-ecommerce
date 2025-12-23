@@ -1,6 +1,7 @@
 package com.fit.microservices.notification.config;
 
 
+import com.fit.microservices.notification.event.OrderCompletedEvent;
 import com.fit.microservices.notification.event.OrderPlacedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -35,6 +36,17 @@ public class KafkaConsumerConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(orderPlacedEventConsumerFactory());
         return factory;
+    }
+
+    // Consumer cho OrderCompletedEvent
+    public ConsumerFactory<String, OrderCompletedEvent>  orderCompletedEventConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "notification-service-group");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        return new DefaultKafkaConsumerFactory<>(props,new StringDeserializer(),new JsonDeserializer<>(OrderCompletedEvent.class, false));
     }
 }
 

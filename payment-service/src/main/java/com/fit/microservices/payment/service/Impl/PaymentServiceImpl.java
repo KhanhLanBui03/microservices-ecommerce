@@ -2,7 +2,7 @@ package com.fit.microservices.payment.service.Impl;
 
 import com.fit.microservices.payment.model.InventoryReservedEvent;
 import com.fit.microservices.payment.model.PaymentCompletedEvent;
-import com.fit.microservices.payment.service.KafkaProducerService;
+import com.fit.microservices.payment.producer.KafkaProducerService;
 import com.fit.microservices.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
