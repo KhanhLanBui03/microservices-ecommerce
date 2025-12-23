@@ -54,19 +54,6 @@ The system is composed of the following services:
 
 Each service has **its own database** (Database-per-service pattern).
 
-------|---------------|
-| api-gateway | Entry point, routing, JWT validation |
-| auth-service | Authentication, JWT issuing |
-| user-service | User management |
-| product-service | Product information |
-| order-service | Order creation & orchestration (Saga) |
-| payment-service | Payment processing (simulated) |
-| inventory-service | Stock management |
-| notification-service | Send notifications |
-| discovery-server | Service discovery (Eureka) |
-
-Each service has **its own database** (Database-per-service pattern).
-
 ---
 
 ## 🔁 Communication Patterns
