@@ -1,5 +1,6 @@
 package com.fit.microservices.notification.listener;
 
+import com.fit.microservices.notification.event.OrderCompletedEvent;
 import com.fit.microservices.notification.event.OrderPlacedEvent;
 import com.fit.microservices.notification.service.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,22 @@ public class OrderEventListener {
             System.err.println("Handle order event failed: " + e.getMessage());
         }
     }
+
+    @KafkaListener(
+            topics = "orders_completed",
+            groupId = "notification-service-group",
+            containerFactory = "orderCompletedEventConsumerFactory"
+    )
+    public void handleOrderCompleted(OrderCompletedEvent event) {
+        System.out.println("🔔 Gửi thông báo cho user "
+                + event.getUserId()
+                + " về đơn hàng "
+                + event.getOrderId()
+                + " trạng thái: "
+                + event.getStatus());
+
+    }
+
 
 
 }

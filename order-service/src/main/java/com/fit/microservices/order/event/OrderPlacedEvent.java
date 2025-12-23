@@ -1,5 +1,6 @@
 package com.fit.microservices.order.event;
 
+import com.fit.microservices.order.model.OrderStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ public class OrderPlacedEvent {
     private String orderNumber;
     private Long userId;
     private List<OrderItem> items;
+    private OrderStatus orderStatus;
     @Getter
     @Setter
     @AllArgsConstructor

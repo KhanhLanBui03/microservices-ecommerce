@@ -8,4 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 public class PaymentFailedEvent {
     private Long orderId;
+    private String reason;
 }
