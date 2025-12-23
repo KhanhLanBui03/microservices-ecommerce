@@ -4,8 +4,6 @@
 
 This project is a **microservices-based e-commerce backend system** built with **Spring Boot & Spring Cloud**, focusing on **real-world backend architecture**, **event-driven communication**, and **distributed transaction handling using Saga Pattern**.
 
-The project is designed as a **personal learning & portfolio project** to demonstrate backend engineering skills at **Intern strong → Fresher level**, including system design, asynchronous messaging, security, testing, and monitoring.
-
 ---
 
 ## 🧱 Architecture Overview
