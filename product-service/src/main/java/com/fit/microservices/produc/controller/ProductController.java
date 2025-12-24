@@ -5,6 +5,7 @@ import com.fit.microservices.produc.dto.ProductResponse;
 import com.fit.microservices.produc.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

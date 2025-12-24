@@ -9,6 +9,8 @@ import com.fit.microservices.produc.repository.ProductRepository;
 import com.fit.microservices.produc.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +23,9 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     @Override
+    @Cacheable("allProducts")
     public List<ProductResponse> findAll() {
+        System.out.println("Querying DB ...");
         return productRepository.findAll()
                 .stream()
                 .map(product -> new ProductResponse(product.getName(),product.getDescription(),product.getSkuCode(),product.getPrice(),product.getCategory().getName()))
@@ -34,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "allProducts", allEntries = true)
     public ProductResponse save(ProductRequest productRequest) {
         Product product = new Product();
         product.setName(productRequest.getName());
@@ -48,6 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "allProducts", allEntries = true)
     public void deleteById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product không tồn tại"));
@@ -56,6 +62,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "allProducts", allEntries = true)
     public ProductResponse update(Long id, ProductRequest productRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product không tồn tại"));

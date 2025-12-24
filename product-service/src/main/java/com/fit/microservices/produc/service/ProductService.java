@@ -8,6 +8,7 @@ import com.fit.microservices.produc.model.Product;
 import java.util.List;
 
 public interface ProductService {
+
     List<ProductResponse> findAll();
     ProductResponse save(ProductRequest productRequest);
     Product findById(Long id);
