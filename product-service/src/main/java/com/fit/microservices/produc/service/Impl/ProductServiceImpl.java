@@ -23,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     @Override
-    @Cacheable("allProducts")
+    @Cacheable(value="allProducts",key = "'all'")
     public List<ProductResponse> findAll() {
         System.out.println("Querying DB ...");
         return productRepository.findAll()
