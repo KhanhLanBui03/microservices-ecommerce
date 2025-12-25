@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserClient  userClient;
     private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
     private final OrderEventProducer orderEventProducer;
-    public void placeOrder(OrderRequest orderRequest) {
+    public String placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setOrderStatus(OrderStatus.PENDING);
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -47,11 +47,10 @@ public class OrderServiceImpl implements OrderService {
         List<String> skuCodes =order.getOrderLineItemsList().stream().map(OrderLineItem::getSkuCode).toList();
         InventoryResponse[] inventoryResponseArray = inventoryClient.checkStock(skuCodes);
         boolean allProductsInStock =  Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::isInStock);
-        if(allProductsInStock){
-            orderRepository.save(order);
-        }else {
+        if(!allProductsInStock){
             throw new ProductOutOfStockException("Product is not in stock");
         }
+        orderRepository.save(order);
         OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent(
                 order.getId(),
                 order.getOrderNumber(),
@@ -68,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
         //Gửi qua producer
         orderEventProducer.publishOrderCreated(orderPlacedEvent);
         System.out.println("Đã gửi Kafka event: "+orderPlacedEvent);
+        return "Order Placed Successfully";
     }
     private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemDto) {
         OrderLineItem orderLineItem = new OrderLineItem();

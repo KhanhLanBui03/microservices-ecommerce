@@ -17,7 +17,7 @@ import java.util.List;
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     @SneakyThrows
     public List<InventoryResponse> isInStock(List<String> skuCode) {
         log.info("Checking Inventory");
