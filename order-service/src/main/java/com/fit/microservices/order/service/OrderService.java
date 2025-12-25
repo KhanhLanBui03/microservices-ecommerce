@@ -6,7 +6,7 @@ import com.fit.microservices.order.model.Order;
 import com.fit.microservices.order.model.OrderStatus;
 
 public interface OrderService {
-    void placeOrder(OrderRequest orderRequest);
+    String placeOrder(OrderRequest orderRequest);
     OrderResponse getOrderById(Long id);
     void updateOrderStatus(Long orderId, OrderStatus status);
 }
