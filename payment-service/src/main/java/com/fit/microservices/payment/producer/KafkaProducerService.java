@@ -16,8 +16,6 @@ public class KafkaProducerService {
     public void sendPaymentCompleted(PaymentCompletedEvent event) {
         kafkaTemplate.send(TOPIC_PAYMENT_COMPLETED, String.valueOf(event.getOrderId()), event);
     }
-
-
     public void sendPaymentFailed(PaymentFailedEvent event) {
         kafkaTemplate.send(TOPIC_PAYMENT_FAILED, String.valueOf(event.getOrderId()), event);
     }

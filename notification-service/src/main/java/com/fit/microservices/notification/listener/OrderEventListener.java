@@ -11,24 +11,24 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrderEventListener {
     private final EmailService emailService;
-    @KafkaListener(
-            topics = "order-topic",
-            groupId = "notification-service-group",
-            containerFactory = "orderPlacedEventListenerFactory"
-    )
-    public void handleOrderEvent(OrderPlacedEvent event) {
-        System.out.println("📨 Nhận được event từ Kafka: " + event);
-        try {
-            emailService.sendOrderEmail(event);
-        } catch (Exception e) {
-            System.err.println("Handle order event failed: " + e.getMessage());
-        }
-    }
+//    @KafkaListener(
+//            topics = "order-topic",
+//            groupId = "notification-service-group",
+//            containerFactory = "orderPlacedEventListenerFactory"
+//    )
+//    public void handleOrderEvent(OrderPlacedEvent event) {
+//        System.out.println("📨 Nhận được event từ Kafka: " + event);
+//        try {
+//            emailService.sendOrderEmail(event);
+//        } catch (Exception e) {
+//            System.err.println("Handle order event failed: " + e.getMessage());
+//        }
+//    }
 
     @KafkaListener(
             topics = "orders_completed",
             groupId = "notification-service-group",
-            containerFactory = "orderCompletedEventConsumerFactory"
+            containerFactory = "orderCompletedEventListenerFactory"
     )
     public void handleOrderCompleted(OrderCompletedEvent event) {
         System.out.println("🔔 Gửi thông báo cho user "
@@ -37,9 +37,7 @@ public class OrderEventListener {
                 + event.getOrderId()
                 + " trạng thái: "
                 + event.getStatus());
-
+        emailService.sendOrderCompletedEvent(event);
     }
-
-
 
 }

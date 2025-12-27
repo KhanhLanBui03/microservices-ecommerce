@@ -16,11 +16,11 @@ public class OrderEventProducer {
 
     public void publishOrderCreated(OrderPlacedEvent event) {
         System.out.println("Gửi OrderPlacedEvent: " + event);
-        kafkaTemplate.send(TOPIC_ORDER_CREATED, String.valueOf(event.getOrderId()));
+        kafkaTemplate.send(TOPIC_ORDER_CREATED, event);
     }
     public void publishOrderCompleted(OrderCompletedEvent event) {
         System.out.println("Gửi OrderCompletedEvent: " + event);
-        kafkaTemplate.send(TOPIC_ORDER_COMPLETED, String.valueOf(event.getOrderId()));
+        kafkaTemplate.send(TOPIC_ORDER_COMPLETED, event);
     }
 
 }

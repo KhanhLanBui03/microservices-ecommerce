@@ -29,10 +29,8 @@ import static com.fit.microservices.order.model.OrderStatus.PENDING;
 @Transactional
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
-//    private final WebClient.Builder webClientBuilder;
     private final InventoryClient  inventoryClient;
     private final UserClient  userClient;
-    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
     private final OrderEventProducer orderEventProducer;
     public String placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -43,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(this::mapToDto)
                 .toList();
+        order.setTotalPrice(orderRequest.getTotalPrice());
         order.setOrderLineItemsList(orderLineItems);
         List<String> skuCodes =order.getOrderLineItemsList().stream().map(OrderLineItem::getSkuCode).toList();
         InventoryResponse[] inventoryResponseArray = inventoryClient.checkStock(skuCodes);
@@ -61,12 +60,12 @@ public class OrderServiceImpl implements OrderService {
                                 item.getQuantity(),
                                 item.getPrice()
                         )).toList(),
-                order.getOrderStatus()
+                order.getTotalPrice()
+
         );
-//        kafkaTemplate.send("order-topic", orderPlacedEvent);
+
         //Gửi qua producer
         orderEventProducer.publishOrderCreated(orderPlacedEvent);
-        System.out.println("Đã gửi Kafka event: "+orderPlacedEvent);
         return "Order Placed Successfully";
     }
     private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemDto) {

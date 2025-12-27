@@ -6,6 +6,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class OrderCompletedEvent {
     private Long orderId;
     private Long userId;
