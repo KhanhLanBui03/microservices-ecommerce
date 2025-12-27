@@ -1,6 +1,7 @@
 package com.fit.microservices.notification.service;
 
 
+import com.fit.microservices.notification.event.OrderCompletedEvent;
 import com.fit.microservices.notification.event.OrderPlacedEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -92,6 +93,37 @@ public class EmailService {
 
         } catch (MessagingException e) {
             System.err.println("Send email failed: " + e.getMessage());
+        }
+    }
+
+    public void sendOrderCompletedEvent(OrderCompletedEvent event) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("hello@demomailtrap.co");
+            helper.setTo("khanhlandev04@gmail.com");
+//            helper.setTo(event.getEmail()); // tốt hơn là lấy từ event
+            helper.setSubject("🛒 Thông báo đơn hàng hoàn tất");
+
+            String content = """
+                    <h3>Xin chào %s</h3>
+                    <p>Đơn hàng <b>%s</b> của bạn đã được <b>%s</b>.</p>
+                    <p>Cảm ơn bạn đã mua sắm ❤️</p>
+                    """.formatted(
+                    event.getUserId(),
+                    event.getOrderId(),
+                    event.getStatus()
+            );
+
+            helper.setText(content, true); // true = HTML
+
+            mailSender.send(message);
+            System.out.println("📧 Email sent for order " + event.getOrderId());
+
+        } catch (Exception e) {
+            System.err.println("❌ Send email failed: " + e.getMessage());
         }
     }
 

@@ -15,6 +15,7 @@ public class OrderPlacedEvent {
     private String orderNumber;
     private Long userId;
     private List<OrderItem> items;
+    private BigDecimal totalPrice;
     @Getter
     @Setter
     @AllArgsConstructor

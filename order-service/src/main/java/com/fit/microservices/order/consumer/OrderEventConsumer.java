@@ -17,6 +17,6 @@ public class OrderEventConsumer {
     )
     public void handlePaymentCompleted(PaymentCompletedEvent paymentCompletedEvent) {
         System.out.println("Nhận PaymentCompletedEvent: "+paymentCompletedEvent);
-        orderService.updateOrderStatus(paymentCompletedEvent.getOrderId(), OrderStatus.PENDING);
+        orderService.updateOrderStatus(paymentCompletedEvent.getOrderId(), OrderStatus.COMPLETED);
     }
 }

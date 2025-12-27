@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class Order {
     private String orderNumber;
     @OneToMany(cascade = CascadeType.ALL)
     private List<OrderLineItem> orderLineItemsList;
-    private Double totalPrice;
+    private BigDecimal totalPrice;
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 

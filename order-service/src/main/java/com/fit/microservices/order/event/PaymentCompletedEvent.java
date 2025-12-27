@@ -5,6 +5,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class PaymentCompletedEvent {
     private Long orderId;
     private String paymentId;
