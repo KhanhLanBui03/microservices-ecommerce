@@ -22,4 +22,6 @@ public class McpServerApplication {
         return List.of(ToolCallbacks.from(productMcpTool));
     }
 
+
+
 }
