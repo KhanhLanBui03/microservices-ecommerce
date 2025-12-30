@@ -3,6 +3,7 @@ package com.fit.microservices.order.service.Impl;
 import com.fit.microservices.order.client.InventoryClient;
 import com.fit.microservices.order.client.UserClient;
 import com.fit.microservices.order.dto.*;
+import com.fit.microservices.order.event.OrderCancelEvent;
 import com.fit.microservices.order.event.OrderCompletedEvent;
 import com.fit.microservices.order.event.OrderPlacedEvent;
 import com.fit.microservices.order.exception.ProductOutOfStockException;
@@ -91,6 +92,14 @@ public class OrderServiceImpl implements OrderService {
         UserResponse userResponse = userClient.getUserById(order.getUserId());
         return new OrderResponse(order.getId(),order.getOrderNumber(),items,userResponse);
     }
+    private List<OrderCancelEvent.OrderItem> mapOrderItems(Order order) {
+        return order.getOrderLineItemsList().stream()
+                .map(item -> new OrderCancelEvent.OrderItem(
+                        item.getSkuCode(),
+                        item.getQuantity()
+                ))
+                .toList();
+    }
 
     @Override
     public void updateOrderStatus(Long orderId, OrderStatus status) {
@@ -105,6 +114,15 @@ public class OrderServiceImpl implements OrderService {
                         status.name()
                 );
                 orderEventProducer.publishOrderCompleted(orderCompletedEvent);
+            }
+            if (status == OrderStatus.CANCELLED) {
+                OrderCancelEvent event = new OrderCancelEvent(
+                        updatedOrder.getId(),
+                        updatedOrder.getUserId(),
+                        mapOrderItems(updatedOrder),
+                        "Order cancelled (payment failed)"
+                );
+                orderEventProducer.publishOrderCancelledEvent(event);
             }
         });
     }

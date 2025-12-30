@@ -1,5 +1,6 @@
 package com.fit.microservices.notification.listener;
 
+import com.fit.microservices.notification.event.OrderCancelledEvent;
 import com.fit.microservices.notification.event.OrderCompletedEvent;
 import com.fit.microservices.notification.event.OrderPlacedEvent;
 import com.fit.microservices.notification.service.EmailService;
@@ -38,6 +39,19 @@ public class OrderEventListener {
                 + " trạng thái: "
                 + event.getStatus());
         emailService.sendOrderCompletedEvent(event);
+    }
+    @KafkaListener(
+            topics = "orders_cancelled",
+            groupId = "notification_cancelled_group",
+            containerFactory = "orderCancelledEventListenerFactory"
+    )
+    public void handleOrderCancelled(OrderCancelledEvent event) {
+        System.out.println("[Notification] User"
+        + event.getUserId()
+                +"đơn hàng"
+                +event.getOrderId()
+                +"đã bị hủy. Lý do: "
+                +event.getReason());
     }
 
 }
