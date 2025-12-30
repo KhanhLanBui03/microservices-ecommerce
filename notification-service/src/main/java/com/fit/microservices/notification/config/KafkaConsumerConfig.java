@@ -1,6 +1,7 @@
 package com.fit.microservices.notification.config;
 
 
+import com.fit.microservices.notification.event.OrderCancelledEvent;
 import com.fit.microservices.notification.event.OrderCompletedEvent;
 import com.fit.microservices.notification.event.OrderPlacedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -56,5 +57,23 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(orderCompletedEventConsumerFactory());
         return factory;
     }
+    @Bean
+    public ConsumerFactory<String, OrderCancelledEvent> orderCancelledEventConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "notification-cancel-group");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        return new DefaultKafkaConsumerFactory<>(props,new StringDeserializer(),new JsonDeserializer<>(OrderCancelledEvent.class, false));
+    }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, OrderCancelledEvent> orderCancelledEventListenerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, OrderCancelledEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(orderCancelledEventConsumerFactory());
+        return factory;
+    }
+
 }
 

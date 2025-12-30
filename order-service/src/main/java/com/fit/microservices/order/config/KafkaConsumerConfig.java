@@ -1,7 +1,9 @@
 package com.fit.microservices.order.config;
 
 
+import com.fit.microservices.order.event.InventoryFailedEvent;
 import com.fit.microservices.order.event.PaymentCompletedEvent;
+import com.fit.microservices.order.event.PaymentFailedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,4 +46,37 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(paymentCompletedConsumerFactory());
         return factory;
     }
+    @Bean
+    public ConsumerFactory<String, PaymentFailedEvent> paymentFailedConsumerFactory(){
+        return new DefaultKafkaConsumerFactory<>(
+                baseProps("order-service-payment-failed"),
+                new StringDeserializer(),
+                new JsonDeserializer<>(PaymentFailedEvent.class)
+        );
+    }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentFailedEvent> paymentFailedKafkaListenerContainerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, PaymentFailedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(paymentFailedConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, InventoryFailedEvent>  inventoryFailedConsumerFactory(){
+        return new DefaultKafkaConsumerFactory<>(
+                baseProps("order-service-inventory-failed"),
+                new StringDeserializer(),
+                new JsonDeserializer<>(InventoryFailedEvent.class)
+        );
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, InventoryFailedEvent> inventoryFailedKafkaListenerContainerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, InventoryFailedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(inventoryFailedConsumerFactory());
+        return factory;
+    }
+
+
+
 }

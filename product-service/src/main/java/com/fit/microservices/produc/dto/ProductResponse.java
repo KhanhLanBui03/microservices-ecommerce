@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 public class ProductResponse implements Serializable {
+
     private String name;
     private String description;
     private String skuCode;
