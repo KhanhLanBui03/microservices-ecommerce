@@ -33,7 +33,7 @@ public class OrderController {
 //    @CircuitBreaker(name = "inventory",fallbackMethod = "fallbackMethod")
 //    @TimeLimiter(name = "inventory")
 //    @Retry(name="inventory")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Place new order")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -44,7 +44,7 @@ public class OrderController {
         return orderService.placeOrder(orderRequest,userId);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get order by ID")
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long orderId) {

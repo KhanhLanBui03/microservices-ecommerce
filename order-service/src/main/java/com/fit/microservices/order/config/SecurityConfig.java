@@ -24,10 +24,10 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.DELETE,"/api/order/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.PUT,"/api/order/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.POST, "/api/order/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.GET, "/api/order/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.DELETE,Endpoints.PUBLIC_DELETE_ENDPOINTS).hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.PUT,Endpoints.ADMIN_PUT_ENDPOINTS).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/order/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, Endpoints.ADMIN_GET_ENDPOINTS).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

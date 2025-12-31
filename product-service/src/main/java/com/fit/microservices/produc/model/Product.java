@@ -6,6 +6,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Table(name = "products")
@@ -41,4 +42,6 @@ public class Product implements Serializable {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    List<Image> images;
 }
