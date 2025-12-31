@@ -23,29 +23,13 @@ import java.util.List;
 public class ProductController {
     private  final ProductService productService;
 
-//    @Operation(summary = "Create new product")
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public ProductResponse createProduct(
-//            @Valid @RequestBody ProductRequest productRequest,
-//            Authentication authentication
-//    ) {
-//        UserPrincipal principal =
-//                (UserPrincipal) authentication.getPrincipal();
-//
-//        productRequest.setUserId(principal.userId());
-//        return productService.save(productRequest);
-//    }
-        @PreAuthorize("hasRole('ADMIN')")
-        @Operation(summary = "Create new product")
-        @PostMapping
-        @ResponseStatus(HttpStatus.CREATED)
-        public ProductResponse createProduct(
-                @Valid @RequestBody ProductRequest productRequest
-
-        ) {
-            return productService.save(productRequest);
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Create new product")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductResponse createProduct(@Valid @RequestBody ProductRequest productRequest) {
+        return productService.save(productRequest);
+    }
 
     @Operation(summary = "Get all product")
     @GetMapping
@@ -53,13 +37,14 @@ public class ProductController {
     public List<ProductResponse> findAllProducts() {
         return productService.findAll();
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update product")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProductResponse updateProduct(@PathVariable Long id,@Valid @RequestBody ProductRequest productRequest) {
         return productService.update(id, productRequest);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete product by ID")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
