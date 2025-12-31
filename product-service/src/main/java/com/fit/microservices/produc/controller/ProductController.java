@@ -2,6 +2,7 @@ package com.fit.microservices.produc.controller;
 
 import com.fit.microservices.produc.dto.ProductRequest;
 import com.fit.microservices.produc.dto.ProductResponse;
+import com.fit.microservices.produc.dto.UserPrincipal;
 import com.fit.microservices.produc.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,6 +10,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +23,29 @@ import java.util.List;
 public class ProductController {
     private  final ProductService productService;
 
-    @Operation(summary = "Create new product")
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse createProduct(@Valid  @RequestBody ProductRequest productRequest) {
-        return productService.save(productRequest);
-    }
+//    @Operation(summary = "Create new product")
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ProductResponse createProduct(
+//            @Valid @RequestBody ProductRequest productRequest,
+//            Authentication authentication
+//    ) {
+//        UserPrincipal principal =
+//                (UserPrincipal) authentication.getPrincipal();
+//
+//        productRequest.setUserId(principal.userId());
+//        return productService.save(productRequest);
+//    }
+        @PreAuthorize("hasRole('ADMIN')")
+        @Operation(summary = "Create new product")
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public ProductResponse createProduct(
+                @Valid @RequestBody ProductRequest productRequest
+
+        ) {
+            return productService.save(productRequest);
+        }
 
     @Operation(summary = "Get all product")
     @GetMapping

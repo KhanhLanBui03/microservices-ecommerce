@@ -33,11 +33,12 @@ public class OrderServiceImpl implements OrderService {
     private final InventoryClient  inventoryClient;
     private final UserClient  userClient;
     private final OrderEventProducer orderEventProducer;
-    public String placeOrder(OrderRequest orderRequest) {
+    @Override
+    public String placeOrder(OrderRequest orderRequest,Long userId) {
         Order order = new Order();
         order.setOrderStatus(OrderStatus.PENDING);
+        order.setUserId(userId);
         order.setOrderNumber(UUID.randomUUID().toString());
-        order.setUserId(orderRequest.getUserId());
         List<OrderLineItem>  orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
                 .map(this::mapToDto)
