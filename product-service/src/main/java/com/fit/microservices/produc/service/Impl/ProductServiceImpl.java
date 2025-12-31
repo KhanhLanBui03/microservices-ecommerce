@@ -47,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(productRequest.getPrice());
         Category category = categoryRepository.findById(productRequest.getCategoryId()).orElseThrow(() -> new RuntimeException("Thương hiệu không tồn tại"));
         product.setCategory(category);
+
         productRepository.save(product);
         log.info("Product save success.");
         return new ProductResponse(product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice(), product.getCategory().getName());

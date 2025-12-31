@@ -85,7 +85,7 @@ public class OrderEventListener {
     @KafkaListener(
             topics = "orders_cancelled",
             groupId = "inventory-cancel-group",
-            containerFactory = "orderCanceledEventConsumerFactory"
+            containerFactory = "orderCanceledEventListenerFactory"
     )
     @Transactional
     public void handleOrderCancelledEvent(OrderCancelEvent event) {

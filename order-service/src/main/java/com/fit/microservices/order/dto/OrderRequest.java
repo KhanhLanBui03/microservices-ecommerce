@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
-    private Long userId;
     private List<OrderLineItemsDto> orderLineItemsDtoList;
     private BigDecimal totalPrice;
 }
