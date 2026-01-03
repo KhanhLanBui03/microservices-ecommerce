@@ -1,7 +1,10 @@
 package com.fit.microservices.payment.service;
 
-import com.fit.microservices.payment.model.InventoryReservedEvent;
+import com.fit.microservices.payment.dto.PaymentResponse;
+import com.fit.microservices.payment.event.InventoryReservedEvent;
+
+import java.util.Map;
 
 public interface PaymentService {
-    void processPayment(InventoryReservedEvent event);
+    PaymentResponse processPayment(InventoryReservedEvent event);
 }

@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Getter
 @Entity
+@Builder
 @Table(name = "images")
 public class Image {
     @Id

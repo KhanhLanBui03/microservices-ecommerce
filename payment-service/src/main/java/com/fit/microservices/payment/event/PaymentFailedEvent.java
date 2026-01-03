@@ -1,4 +1,4 @@
-package com.fit.microservices.payment.model;
+package com.fit.microservices.payment.event;
 
 import lombok.*;
 

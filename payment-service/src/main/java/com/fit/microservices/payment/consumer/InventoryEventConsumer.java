@@ -1,7 +1,6 @@
 package com.fit.microservices.payment.consumer;
 
-import com.fit.microservices.payment.model.InventoryReservedEvent;
-import com.fit.microservices.payment.model.PaymentCompletedEvent;
+import com.fit.microservices.payment.event.InventoryReservedEvent;
 import com.fit.microservices.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
