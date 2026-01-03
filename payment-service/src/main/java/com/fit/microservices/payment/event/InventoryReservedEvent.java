@@ -1,4 +1,4 @@
-package com.fit.microservices.payment.model;
+package com.fit.microservices.payment.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentCompletedEvent {
+public class InventoryReservedEvent {
     private Long orderId;
-    private String paymentId;
-    private double amount;
+    private String status;
+    private String message;
 }

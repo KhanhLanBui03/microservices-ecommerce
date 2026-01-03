@@ -26,6 +26,20 @@ services:
     volumes:
       - order_data:/var/lib/mysql
     restart: always
+  mysql-payment:
+    image: mysql:8.3.0
+    container_name: mysql-payment
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: payment_service
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3310:3306"
+    volumes:
+      - payment_data:/var/lib/mysql
+    restart: always
+
   mysql-auth:
     image: mysql:8.3.0
     container_name: mysql-auth
@@ -110,6 +124,7 @@ volumes:
   order_data:
   inventory_data:
   auth_data:
+  payment_data:
 
 networks:
   default:

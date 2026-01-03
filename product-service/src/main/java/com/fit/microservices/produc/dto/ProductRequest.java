@@ -1,16 +1,14 @@
 package com.fit.microservices.produc.dto;
 
-import com.fit.microservices.produc.model.Category;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,4 +28,6 @@ public class ProductRequest {
     private BigDecimal price;
     @NotNull(message = "Category không được để trống")
     private Long categoryId;
+    @NotEmpty(message = "Sản phẩm phải có ít nhất 1 hình ảnh")
+    private List<@Valid ImageRequest> images;
 }

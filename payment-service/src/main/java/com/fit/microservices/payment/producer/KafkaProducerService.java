@@ -1,7 +1,7 @@
 package com.fit.microservices.payment.producer;
 
-import com.fit.microservices.payment.model.PaymentCompletedEvent;
-import com.fit.microservices.payment.model.PaymentFailedEvent;
+import com.fit.microservices.payment.event.PaymentCompletedEvent;
+import com.fit.microservices.payment.event.PaymentFailedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
