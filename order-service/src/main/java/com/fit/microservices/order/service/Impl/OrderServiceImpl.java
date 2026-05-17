@@ -10,6 +10,9 @@ import com.fit.microservices.order.exception.ProductOutOfStockException;
 import com.fit.microservices.order.model.Order;
 import com.fit.microservices.order.model.OrderLineItem;
 import com.fit.microservices.order.model.OrderStatus;
+import com.fit.microservices.order.model.OutboxEvent;
+import com.fit.microservices.order.repository.OutboxEventRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit.microservices.order.producer.OrderEventProducer;
 import com.fit.microservices.order.repository.OrderRepository;
 import com.fit.microservices.order.service.OrderService;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 //import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +37,8 @@ public class OrderServiceImpl implements OrderService {
     private final InventoryClient  inventoryClient;
     private final UserClient  userClient;
     private final OrderEventProducer orderEventProducer;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
     @Override
     public String placeOrder(OrderRequest orderRequest,Long userId) {
         Order order = new Order();
@@ -66,8 +72,19 @@ public class OrderServiceImpl implements OrderService {
 
         );
 
-        //Gửi qua producer
-        orderEventProducer.publishOrderCreated(orderPlacedEvent);
+        //Gửi qua outbox
+        try {
+            OutboxEvent outboxEvent = new OutboxEvent();
+            outboxEvent.setAggregateId(order.getId());
+            outboxEvent.setAggregateType("Order");
+            outboxEvent.setEventType("OrderPlacedEvent");
+            outboxEvent.setPayload(objectMapper.writeValueAsString(orderPlacedEvent));
+            outboxEvent.setStatus("PENDING");
+            outboxEvent.setCreatedAt(LocalDateTime.now());
+            outboxEventRepository.save(outboxEvent);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save outbox event", e);
+        }
         return "Order Placed Successfully";
     }
     private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemDto) {
@@ -114,7 +131,18 @@ public class OrderServiceImpl implements OrderService {
                         updatedOrder.getUserId(),
                         status.name()
                 );
-                orderEventProducer.publishOrderCompleted(orderCompletedEvent);
+                try {
+                    OutboxEvent outboxEvent = new OutboxEvent();
+                    outboxEvent.setAggregateId(updatedOrder.getId());
+                    outboxEvent.setAggregateType("Order");
+                    outboxEvent.setEventType("OrderCompletedEvent");
+                    outboxEvent.setPayload(objectMapper.writeValueAsString(orderCompletedEvent));
+                    outboxEvent.setStatus("PENDING");
+                    outboxEvent.setCreatedAt(LocalDateTime.now());
+                    outboxEventRepository.save(outboxEvent);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to save outbox event", e);
+                }
             }
             if (status == OrderStatus.CANCELLED) {
                 OrderCancelEvent event = new OrderCancelEvent(
@@ -123,7 +151,18 @@ public class OrderServiceImpl implements OrderService {
                         mapOrderItems(updatedOrder),
                         "Order cancelled (payment failed)"
                 );
-                orderEventProducer.publishOrderCancelledEvent(event);
+                try {
+                    OutboxEvent outboxEvent = new OutboxEvent();
+                    outboxEvent.setAggregateId(updatedOrder.getId());
+                    outboxEvent.setAggregateType("Order");
+                    outboxEvent.setEventType("OrderCancelEvent");
+                    outboxEvent.setPayload(objectMapper.writeValueAsString(event));
+                    outboxEvent.setStatus("PENDING");
+                    outboxEvent.setCreatedAt(LocalDateTime.now());
+                    outboxEventRepository.save(outboxEvent);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to save outbox event", e);
+                }
             }
         });
     }

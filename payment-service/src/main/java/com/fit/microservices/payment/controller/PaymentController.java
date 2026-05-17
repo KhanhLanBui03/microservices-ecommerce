@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/payment/callback")
@@ -77,6 +78,38 @@ public class PaymentController {
 
         paymentRepository.save(payment);
         return ResponseEntity.ok("Payment processed");
+    }
+
+    @GetMapping("/mock")
+    public ResponseEntity<String> mockCallback(@RequestParam("vnp_TxnRef") String txnRef) {
+        Payment payment = paymentRepository
+                .findByTransactionId(txnRef)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            return ResponseEntity.ok("Payment already processed");
+        }
+
+        // Tự động gán SUCCESS cho Mock
+        payment.setStatus(PaymentStatus.SUCCESS);
+        payment.setGatewayTransactionId(UUID.randomUUID().toString()); 
+
+        kafkaProducerService.sendPaymentCompleted(
+                new PaymentCompletedEvent(
+                        payment.getOrderId(),
+                        payment.getTransactionId(),
+                        payment.getAmount().doubleValue()
+                )
+        );
+
+        paymentRepository.save(payment);
+        
+        return ResponseEntity.ok(
+                "<html><body><h2>MOCK PAYMENT THÀNH CÔNG!</h2>" +
+                "<p>Order ID: " + payment.getOrderId() + "</p>" +
+                "<p>Hệ thống đã tự động duyệt thanh toán và gửi Event về Order Service.</p>" +
+                "</body></html>"
+        );
     }
 }
 
