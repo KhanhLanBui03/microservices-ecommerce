@@ -81,4 +81,17 @@ public class AuthServiceImpl implements AuthService {
         credential.setRole("USER");
         credentialRepository.save(credential);
     }
+
+    @Override
+    public void registerAdmin(RegisterRequest registerRequest) {
+        if (credentialRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        }
+        Credential credential = new Credential();
+        credential.setEmail(registerRequest.getEmail());
+        credential.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        credential.setUserId(-1L); // ADMIN không có user profile
+        credential.setRole("ADMIN");
+        credentialRepository.save(credential);
+    }
 }
