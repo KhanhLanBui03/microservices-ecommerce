@@ -4,7 +4,10 @@ public class Endpoints {
     //Permit all
     public static final String[] PUBLIC_GET_ENDPOINTS = {
             "/api/product/**",
-            "/api/category/**"
+            "/api/category/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     };
     public static final String[] PUBLIC_POST_ENDPOINTS = {
 

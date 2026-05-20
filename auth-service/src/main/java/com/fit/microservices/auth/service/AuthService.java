@@ -11,4 +11,5 @@ import java.util.Map;
 public interface AuthService {
     LoginResponse login(LoginRequest loginRequest);
     void register(RegisterRequest registerRequest);
+    void registerAdmin(RegisterRequest registerRequest);
 }
